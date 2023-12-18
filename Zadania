@@ -1,7 +1,27 @@
 Jaki proces zamierzamy regulować:
+Zamierzamy regulować temperaturę dzięki zewnętrznemu wiatrakowi oraz czujnikowi temperatury.
 
 Wykonać schemat systemu w postaci schematu obwodu elektrycznego(KiCad). Schemat powinien prezentowa¢ najważniejsze elementy systemu: regulowany proces, metodę pomiaru, urządzenie sterujące oraz sposób podłączenia tych
 elementów do systemu mikroprocesorowego.
+- Robimy schemat układu w programie KiCad.
 
 
 Opisać założenia systemu. Które z wymagań dodatkowych chcemy spełnić.
+
+Dodatkowe wymagania, które chcemy spełnić:
+1. Podział kodu źródłowego na moduły i dokumentacja kodu zgodna ze standardem dokumentacji
+Doxygen. Separacja funkcjonalno±ci i konguracji.
+2. Wykorzystanie systemu kontroli wersji.
+3. System zapewnia uchyb ustalony poziomie 1% zakresu regulacji.
+4. Dedykowana aplikacja desktopowa jako graczny interfejs użytkownika *
+5. Dedykowane skrypty lub modele symulacyjne do logowania sygnałów steruj¡cych i pomiarowych *
+6. Dodatkowe urządzenie wyjścia u»ytkownika, np.: wy±wietlacz LED lub LCD
+7. Dodatkowe urządzenie sterujące, np. 2. źródło światła w ukªadzie regulacji oświetlenia, wentylator
+w ukªadzie regulacji temperatury, etc.,
+8. Dodatkowe urządzenie wej±cia u»ytkownika, np.: enkoder, potencjometr, klawiatura numeryczna,
+etc.
+9. Protokół komunikacji szeregowej wykorzystujący sumę kontrolną.
+
+
+
+Ogólny zamysł projektu: Układ regulacji temperatury poprzez wiatrak/wentylator.
