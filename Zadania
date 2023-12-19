@@ -1,5 +1,5 @@
 Jaki proces zamierzamy regulować:
-Zamierzamy regulować temperaturę dzięki zewnętrznemu wiatrakowi oraz czujnikowi temperatury.
+Zamierzamy regulować prędkość obrotową wiatraka.
 
 Wykonać schemat systemu w postaci schematu obwodu elektrycznego(KiCad). Schemat powinien prezentowa¢ najważniejsze elementy systemu: regulowany proces, metodę pomiaru, urządzenie sterujące oraz sposób podłączenia tych
 elementów do systemu mikroprocesorowego.
@@ -16,11 +16,14 @@ Doxygen. Separacja funkcjonalno±ci i konguracji.
 4. Dedykowana aplikacja desktopowa jako graczny interfejs użytkownika *
 5. Dedykowane skrypty lub modele symulacyjne do logowania sygnałów steruj¡cych i pomiarowych *
 6. Dodatkowe urządzenie wyjścia u»ytkownika, np.: wy±wietlacz LED lub LCD
-7. Dodatkowe urządzenie sterujące, np. 2. źródło światła w ukªadzie regulacji oświetlenia, wentylator
-w ukªadzie regulacji temperatury, etc.,
-8. Dodatkowe urządzenie wej±cia u»ytkownika, np.: enkoder, potencjometr, klawiatura numeryczna,
+8. Dodatkowe urządzenie wej±cia użytkownika, np.: enkoder, potencjometr, klawiatura numeryczna,
 etc.
 9. Protokół komunikacji szeregowej wykorzystujący sumę kontrolną.
+10. Wykorzystanie karty SD i systemu plików, np. do logowania danych lub przechowywania parame-
+trów,
+11. Wykorzystanie systemu czasu rzeczywistego np. FreeRTOS,
+12. Wykorzystanie komunikacji sieciowej (np. złącza Ethernet i protokołu MQTT, HTTP, TCP lub
+UDP) zamiast portu szeregowego
 
 
 
