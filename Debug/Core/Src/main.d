@@ -39,7 +39,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/usart.h ../Core/Inc/usb_otg.h ../Core/Inc/gpio.h \
  ../Core/Inc/pid_controller_config.h ../Core/Inc/pid_controller.h \
  ../Core/Inc/btn_config.h ../Core/Inc/btn.h ../Core/Inc/dio.h \
- ../Core/Inc/encoder_config.h ../Core/Inc/encoder.h
+ ../Core/Inc/lcd.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h:
 ../Core/Inc/stm32f7xx_hal_conf.h:
@@ -89,5 +89,4 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/btn_config.h:
 ../Core/Inc/btn.h:
 ../Core/Inc/dio.h:
-../Core/Inc/encoder_config.h:
-../Core/Inc/encoder.h:
+../Core/Inc/lcd.h:
