@@ -29,7 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "pid_controller_config.h"
 #include "btn_config.h"
-#include "encoder_config.h"
+#include "lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -264,7 +264,6 @@ int main(void)
   MX_TIM6_Init();
   MX_TIM7_Init();
   MX_ADC1_Init();
-  MX_USART2_UART_Init();
   MX_TIM8_Init();
   /* USER CODE BEGIN 2 */
 
@@ -277,12 +276,36 @@ int main(void)
   msg_len = strlen("000\r");
   HAL_UART_Receive_IT(&huart3, rx_buffer, msg_len);
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_ALL);
+
+  // Inicjacja lcd //
+  Lcd_PortType ports[] = {
+ 		  D4_GPIO_Port, D5_GPIO_Port, D6_GPIO_Port, D7_GPIO_Port
+  };
+  Lcd_PinType pins[] = {D4_Pin, D5_Pin, D6_Pin, D7_Pin};
+
+  Lcd_HandleTypeDef lcd = Lcd_create(ports, pins, RS_GPIO_Port, RS_Pin, E_GPIO_Port, E_Pin, LCD_4_BIT_MODE);
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  	  HAL_Delay(1000);
+	  	  Lcd_clear(&lcd);
+	  	  Lcd_cursor(&lcd, 0,1);
+	  	  Lcd_string(&lcd, "RPM: ");
+	  	  Lcd_cursor(&lcd, 0,7);
+	  	  Lcd_int(&lcd, rpm);
+	  	  Lcd_cursor(&lcd, 1,1);
+	  	  Lcd_string(&lcd, "REF: ");
+	  	  Lcd_cursor(&lcd, 1,7);
+	  	  Lcd_int(&lcd, rpm_ref);
+
+
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
