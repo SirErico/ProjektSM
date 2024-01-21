@@ -60,8 +60,8 @@ all: main-build
 main-build: Prodzektv1.0.elf secondary-outputs
 
 # Tool invocations
-Prodzektv1.0.elf Prodzektv1.0.map: $(OBJS) $(USER_OBJS) C:\Users\tymon\STM32CubeIDE\projekt\Prodzektv1.0\STM32F746ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Prodzektv1.0.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\tymon\STM32CubeIDE\projekt\Prodzektv1.0\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Prodzektv1.0.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Prodzektv1.0.elf Prodzektv1.0.map: $(OBJS) $(USER_OBJS) C:\Users\tymon\git\ProjektSM\Prodzektv1.0\STM32F746ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Prodzektv1.0.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\tymon\git\ProjektSM\Prodzektv1.0\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Prodzektv1.0.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
