@@ -55,9 +55,18 @@ uint8_t Is_First_Captured = 0;
 uint32_t frequency = 0;
 int prd = 0;
 int niwim = 0;
-// pomiar z tachometru //
+uint8_t rx_buffer[32];
+uint16_t msg_len;
 
+/********************************************//**
+ *  Pomiar z tachometru
+ ***********************************************/
 
+/**
+  * @brief  Input Capture callback
+  * @param  htim TIM handle
+  * @retval None
+  */
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
@@ -85,10 +94,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 						{
 							Difference = (0xffffffff - IC_Val1) + IC_Val2;
 						}
-
-						float refClock = 72000000/(72);
-
-						frequency = refClock/Difference;
+						frequency = HAL_RCC_GetPCLK1Freq()/Difference;
 						rpm = frequency*30;
 						__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
 						Is_First_Captured = 0; // set it back to false
@@ -98,20 +104,76 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 }
 
 
+
+
+
+/**
+  * @brief  Period elapsed callback in non-blocking mode
+  * @param  htim TIM handle
+  * @retval None
+  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  /// Oblcizenie sygnału sterującego.
   if(htim == &htim4)
   {
+
+	  /********************************************//**
+	   *  Sterowanie pwm za pomocą regulatora PID
+	   ***********************************************/
+
+
 		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, (uint32_t)(Duty));
 	  	  Duty = PID_GetOutput(&hpid1, rpm_ref, rpm);
 	  	  e = rpm_ref - rpm;
-//	  	  HAL_ADC_Start(&hadc1);
-//	  	  HAL_ADC_PollForConversion(&hadc1, 20);
-//	  	  rpm= HAL_ADC_GetValue(&hadc1);
+
+
+
 
   }
+
+  /********************************************//**
+   *  Wysyłanie informacji o działaniu układu przez port szeregowy
+   ***********************************************/
+
+ if(htim == &htim7)
+ {
+	 uint8_t tx_buffer[64];
+	 int resp_len = sprintf((char*)tx_buffer, "{ \"RPM\":%d, \"RPM_REF\":%d, \"Duty\":%d }\r", rpm, rpm_ref, Duty); // Creating a message with RPM, RPM_REF, DUTY to send to termial
+	 HAL_UART_Transmit(&huart3, tx_buffer, resp_len, 10);
+	 }
+ }
+
+
+
+
+/**
+  * @brief  Rx Transfer completed callback.
+  * @param  huart UART handle.
+  * @retval None
+  */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+
+	  /********************************************//**
+	   *  Kontrolowanie wartości ustalanej za pomocą terminalu
+	   ***********************************************/
+  if(huart == &huart3)
+	  {
+      sscanf((char*)&rx_buffer, "%d", &rpm_ref);
+	  }
+  HAL_UART_Receive_IT(&huart3, rx_buffer, msg_len);
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* USER CODE END PD */
@@ -183,7 +245,9 @@ int main(void)
   HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim4);
-
+  HAL_TIM_Base_Start_IT(&htim7);
+  msg_len = strlen("000\r");
+  HAL_UART_Receive_IT(&huart3, rx_buffer, msg_len);
   /* USER CODE END 2 */
 
   /* Infinite loop */
