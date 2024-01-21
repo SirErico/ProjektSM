@@ -28,6 +28,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "pid_controller_config.h"
+#include "btn_config.h"
+#include "encoder_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,10 +59,9 @@ int prd = 0;
 int niwim = 0;
 uint8_t rx_buffer[32];
 uint16_t msg_len;
+int enc_raw = 0;
+int enc_mod = 0;
 
-/********************************************//**
- *  Pomiar z tachometru
- ***********************************************/
 
 /**
   * @brief  Input Capture callback
@@ -70,6 +71,13 @@ uint16_t msg_len;
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
+
+
+	/********************************************//**
+	 *  Pomiar z tachometru
+	 ***********************************************/
+
+
 	if(htim == &htim2)
 	{
 				HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
@@ -81,7 +89,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 						Is_First_Captured = 1;  // set the first captured as true
 					}
 
-					else   // If the first rising edge is captured, now we will capture the second edge
+					else   // If the first rising edge is captured, now capture the second edge
 					{
 						IC_Val2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);  // read second value
 
@@ -94,7 +102,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 						{
 							Difference = (0xffffffff - IC_Val1) + IC_Val2;
 						}
-						frequency = HAL_RCC_GetPCLK1Freq()/Difference;
+						frequency = HAL_RCC_GetPCLK1Freq()/Difference;  // read frequency from timer clock
 						rpm = frequency*30;
 						__HAL_TIM_SET_COUNTER(htim, 0);  // reset the counter
 						Is_First_Captured = 0; // set it back to false
@@ -127,7 +135,33 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  	  e = rpm_ref - rpm;
 
 
+		  /********************************************//**
+		   *  Zmiana trybu sterowania wartością ustalaną
+		   ***********************************************/
 
+
+	  	if(BTN_DIO_EdgeDetected(&husrbtn) == BTN_PRESSED_EDGE){
+	  		if (mode == 1)
+	  			mode = 0;
+	  		else if(mode == 0)
+	  			mode=1;
+	  	}
+
+
+
+
+		  /********************************************//**
+		   *  Sterowanie wartością ustalaną za pomocą enkodera
+		   ***********************************************/
+
+
+	  	enc_raw = __HAL_TIM_GET_COUNTER(&htim8);
+	  	if(enc_raw<100)
+	  		enc_mod=1000+enc_raw;  // if enc value is below the minimum work range put it to the minimum working value and add unmodified amount
+	  	else
+	  		enc_mod=enc_raw * 10; // if enc value is within the work range multiply it for easier maneuverability
+ if(mode==1)
+	 rpm_ref = enc_mod;
 
   }
 
@@ -157,21 +191,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	  /********************************************//**
 	   *  Kontrolowanie wartości ustalanej za pomocą terminalu
 	   ***********************************************/
+	if(mode == 0){
   if(huart == &huart3)
 	  {
-      sscanf((char*)&rx_buffer, "%d", &rpm_ref);
+      sscanf((char*)&rx_buffer, "%d", &rpm_ref); // Get value from terminal
 	  }
   HAL_UART_Receive_IT(&huart3, rx_buffer, msg_len);
 }
-
-
-
-
-
-
-
-
-
+}
 
 
 
@@ -238,6 +265,7 @@ int main(void)
   MX_TIM7_Init();
   MX_ADC1_Init();
   MX_USART2_UART_Init();
+  MX_TIM8_Init();
   /* USER CODE BEGIN 2 */
 
   // Inicjacja timerów //
@@ -248,6 +276,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim7);
   msg_len = strlen("000\r");
   HAL_UART_Receive_IT(&huart3, rx_buffer, msg_len);
+  HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_ALL);
   /* USER CODE END 2 */
 
   /* Infinite loop */
